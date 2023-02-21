@@ -2,6 +2,8 @@ import 'package:chat_gpt/view_models/theme_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../constants/enums.dart';
+
 class ThemeSwitch extends ConsumerStatefulWidget {
   const ThemeSwitch({Key? key}) : super(key: key);
 

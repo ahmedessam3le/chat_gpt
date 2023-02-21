@@ -4,6 +4,8 @@ import 'package:chat_gpt/views/chat_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'constants/enums.dart';
+
 void main() {
   runApp(
     const ProviderScope(
