@@ -12,6 +12,7 @@ dependencies:
   # ---------------------------------------------------------------------------------- #
   chat_gpt_sdk: ^2.0.0
   flutter_riverpod: ^2.2.0
+  speech_to_text: ^6.1.1
 
 dev_dependencies:
   flutter_test:
