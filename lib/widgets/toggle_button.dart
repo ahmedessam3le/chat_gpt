@@ -5,11 +5,13 @@ class ToggleButton extends StatefulWidget {
   final InputMode inputMode;
   final VoidCallback sendTextMessage;
   final VoidCallback sendVoiceMessage;
+  final bool isReplying;
   const ToggleButton({
     Key? key,
     required this.inputMode,
     required this.sendTextMessage,
     required this.sendVoiceMessage,
+    required this.isReplying,
   }) : super(key: key);
 
   @override
@@ -26,8 +28,14 @@ class _ToggleButtonState extends State<ToggleButton> {
         shape: const CircleBorder(),
         padding: const EdgeInsets.all(15),
       ),
-      onPressed: () {},
-      child: Icon(widget.inputMode == InputMode.text ? Icons.send : Icons.mic),
+      onPressed: widget.isReplying
+          ? null
+          : widget.inputMode == InputMode.text
+              ? widget.sendTextMessage
+              : widget.sendVoiceMessage,
+      child: Icon(
+        widget.inputMode == InputMode.text ? Icons.send : Icons.mic,
+      ),
     );
   }
 }

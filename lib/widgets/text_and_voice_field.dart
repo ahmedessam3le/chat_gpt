@@ -1,21 +1,28 @@
 import 'package:chat_gpt/constants/enums.dart';
+import 'package:chat_gpt/models/chat_model.dart';
+import 'package:chat_gpt/services/ai_handler.dart';
+import 'package:chat_gpt/view_models/chat_view_model.dart';
 import 'package:chat_gpt/widgets/toggle_button.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class TextAndVoiceField extends StatefulWidget {
+class TextAndVoiceField extends ConsumerStatefulWidget {
   const TextAndVoiceField({Key? key}) : super(key: key);
 
   @override
-  State<TextAndVoiceField> createState() => _TextAndVoiceFieldState();
+  ConsumerState<TextAndVoiceField> createState() => _TextAndVoiceFieldState();
 }
 
-class _TextAndVoiceFieldState extends State<TextAndVoiceField> {
+class _TextAndVoiceFieldState extends ConsumerState<TextAndVoiceField> {
   InputMode inputMode = InputMode.voice;
   late final TextEditingController _messageController;
+  final AiHandler _openAI = AiHandler();
+  var _isReplying = false;
 
   @override
   void initState() {
     _messageController = TextEditingController();
+    _openAI.dispose();
     super.initState();
   }
 
@@ -31,9 +38,46 @@ class _TextAndVoiceFieldState extends State<TextAndVoiceField> {
     });
   }
 
-  void sendTextMessage(String message) {}
+  void sendTextMessage(String message) async {
+    setReplyingState(true);
+
+    addMessageToChat(
+      id: DateTime.now().toString(),
+      message: message,
+      isMe: true,
+    );
+
+    setInputMode(InputMode.voice);
+
+    final aiResponse = await _openAI.ask(message);
+
+    addMessageToChat(
+      id: DateTime.now().toString(),
+      message: aiResponse,
+      isMe: false,
+    );
+
+    setReplyingState(false);
+  }
 
   void sendVoiceMessage() {}
+
+  void addMessageToChat({
+    required String id,
+    required String message,
+    required bool isMe,
+  }) {
+    final chat = ref.read(ChatViewModel.chatsProvider.notifier);
+    chat.add(
+      ChatModel(id: id, message: message, isMe: isMe),
+    );
+  }
+
+  void setReplyingState(bool isReplying) {
+    setState(() {
+      _isReplying = isReplying;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,6 +89,7 @@ class _TextAndVoiceFieldState extends State<TextAndVoiceField> {
           children: [
             Expanded(
               child: TextField(
+                controller: _messageController,
                 cursorColor: Theme.of(context).colorScheme.onPrimary,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
@@ -67,7 +112,12 @@ class _TextAndVoiceFieldState extends State<TextAndVoiceField> {
             const SizedBox(width: 8),
             ToggleButton(
               inputMode: inputMode,
-              sendTextMessage: () => sendTextMessage(_messageController.text),
+              isReplying: _isReplying,
+              sendTextMessage: () {
+                final message = _messageController.text;
+                _messageController.clear();
+                sendTextMessage(message);
+              },
               sendVoiceMessage: sendVoiceMessage,
             ),
           ],
