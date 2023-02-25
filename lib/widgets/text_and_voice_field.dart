@@ -1,6 +1,7 @@
 import 'package:chat_gpt/constants/enums.dart';
 import 'package:chat_gpt/models/chat_model.dart';
 import 'package:chat_gpt/services/ai_handler.dart';
+import 'package:chat_gpt/services/voice_handler.dart';
 import 'package:chat_gpt/view_models/chat_view_model.dart';
 import 'package:chat_gpt/widgets/toggle_button.dart';
 import 'package:flutter/material.dart';
@@ -17,18 +18,21 @@ class _TextAndVoiceFieldState extends ConsumerState<TextAndVoiceField> {
   InputMode inputMode = InputMode.voice;
   late final TextEditingController _messageController;
   final AiHandler _openAI = AiHandler();
+  final VoiceHandler _voiceHandler = VoiceHandler();
   var _isReplying = false;
+  var _isListening = false;
 
   @override
   void initState() {
     _messageController = TextEditingController();
-    _openAI.dispose();
+    _voiceHandler.init();
     super.initState();
   }
 
   @override
   void dispose() {
     _messageController.dispose();
+    _openAI.dispose();
     super.dispose();
   }
 
@@ -68,7 +72,17 @@ class _TextAndVoiceFieldState extends ConsumerState<TextAndVoiceField> {
     setReplyingState(false);
   }
 
-  void sendVoiceMessage() {}
+  void sendVoiceMessage() async {
+    if (_voiceHandler.service.isListening) {
+      await _voiceHandler.stopListening();
+      setListeningState(false);
+    } else {
+      setListeningState(true);
+      final result = await _voiceHandler.startListening();
+      setListeningState(false);
+      sendTextMessage(result);
+    }
+  }
 
   void addMessageToChat({
     required String id,
@@ -84,6 +98,12 @@ class _TextAndVoiceFieldState extends ConsumerState<TextAndVoiceField> {
   void setReplyingState(bool isReplying) {
     setState(() {
       _isReplying = isReplying;
+    });
+  }
+
+  void setListeningState(bool isListening) {
+    setState(() {
+      _isListening = isListening;
     });
   }
 
@@ -126,6 +146,7 @@ class _TextAndVoiceFieldState extends ConsumerState<TextAndVoiceField> {
             ToggleButton(
               inputMode: inputMode,
               isReplying: _isReplying,
+              isListening: _isListening,
               sendTextMessage: () {
                 final message = _messageController.text;
                 _messageController.clear();
