@@ -31,6 +31,10 @@ class _TextAndVoiceFieldState extends State<TextAndVoiceField> {
     });
   }
 
+  void sendTextMessage(String message) {}
+
+  void sendVoiceMessage() {}
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -61,7 +65,11 @@ class _TextAndVoiceFieldState extends State<TextAndVoiceField> {
               ),
             ),
             const SizedBox(width: 8),
-            ToggleButton(inputMode: inputMode),
+            ToggleButton(
+              inputMode: inputMode,
+              sendTextMessage: () => sendTextMessage(_messageController.text),
+              sendVoiceMessage: sendVoiceMessage,
+            ),
           ],
         ),
       ),

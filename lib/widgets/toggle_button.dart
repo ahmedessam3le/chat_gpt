@@ -3,7 +3,14 @@ import 'package:flutter/material.dart';
 
 class ToggleButton extends StatefulWidget {
   final InputMode inputMode;
-  const ToggleButton({Key? key, required this.inputMode}) : super(key: key);
+  final VoidCallback sendTextMessage;
+  final VoidCallback sendVoiceMessage;
+  const ToggleButton({
+    Key? key,
+    required this.inputMode,
+    required this.sendTextMessage,
+    required this.sendVoiceMessage,
+  }) : super(key: key);
 
   @override
   State<ToggleButton> createState() => _ToggleButtonState();
