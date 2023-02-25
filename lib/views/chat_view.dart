@@ -19,9 +19,11 @@ class ChatView extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
               child: Consumer(
                 builder: (context, ref, child) {
-                  final chat = ref.watch(ChatViewModel.chatsProvider);
+                  final chat =
+                      ref.watch(ChatViewModel.chatsProvider).reversed.toList();
                   return ListView.builder(
                     physics: const BouncingScrollPhysics(),
+                    reverse: true,
                     itemCount: chat.length,
                     itemBuilder: (context, index) => ChatItem(
                       message: chat[index].message,

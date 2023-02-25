@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:chat_gpt/constants/enums.dart';
 import 'package:chat_gpt/models/chat_model.dart';
 import 'package:chat_gpt/services/ai_handler.dart';
@@ -73,6 +75,10 @@ class _TextAndVoiceFieldState extends ConsumerState<TextAndVoiceField> {
   }
 
   void sendVoiceMessage() async {
+    if (!_voiceHandler.isSpeechEnabled) {
+      log('------------------- sendVoiceMessage ERROR -------------------\n Speech to text is not supported');
+      return;
+    }
     if (_voiceHandler.service.isListening) {
       await _voiceHandler.stopListening();
       setListeningState(false);
