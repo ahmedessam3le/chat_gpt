@@ -47,9 +47,17 @@ class _TextAndVoiceFieldState extends ConsumerState<TextAndVoiceField> {
       isMe: true,
     );
 
+    addMessageToChat(
+      id: 'typing',
+      message: 'Typing ...',
+      isMe: false,
+    );
+
     setInputMode(InputMode.voice);
 
     final aiResponse = await _openAI.ask(message);
+
+    removeTyping();
 
     addMessageToChat(
       id: DateTime.now().toString(),
@@ -77,6 +85,11 @@ class _TextAndVoiceFieldState extends ConsumerState<TextAndVoiceField> {
     setState(() {
       _isReplying = isReplying;
     });
+  }
+
+  void removeTyping() {
+    final chat = ref.read(ChatViewModel.chatsProvider.notifier);
+    chat.removeTypingMessage();
   }
 
   @override

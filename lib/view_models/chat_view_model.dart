@@ -11,4 +11,8 @@ class ChatViewModel extends StateNotifier<List<ChatModel>> {
   void add(ChatModel message) {
     state = [...state, message];
   }
+
+  void removeTypingMessage() {
+    state = state..removeWhere((message) => message.id == 'typing');
+  }
 }
